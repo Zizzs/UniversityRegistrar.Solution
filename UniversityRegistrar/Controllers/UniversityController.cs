@@ -9,7 +9,8 @@ namespace UniversityRegistrar.Controllers
         [HttpGet("/university/newstudent")]
         public ActionResult Student()
         {
-            return View("NewStudent");
+            List<StudentClass> allStudents = StudentClass.GetAll();
+            return View("NewStudent", allStudents);
         }
 
         [HttpPost("/university/newstudent")]
@@ -17,13 +18,15 @@ namespace UniversityRegistrar.Controllers
         {
             StudentClass student = new StudentClass(name, date);
             student.Save();
-            return View("NewStudent");
+            return RedirectToAction("Student");
         }
 
         [HttpGet("/university/newcourse")]
         public ActionResult Course()
         {
-            return View("NewCourse");
+            List<CourseClass> allCourses = CourseClass.GetAll();
+
+            return View("NewCourse", allCourses);
         }
 
         [HttpPost("/university/newcourse")]
@@ -31,7 +34,7 @@ namespace UniversityRegistrar.Controllers
         {
             CourseClass course = new CourseClass(name, code);
             course.Save();
-            return View("NewCourse");
+            return RedirectToAction("Course");
         }
 
         [HttpGet("/university/assign")]

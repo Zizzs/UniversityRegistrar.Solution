@@ -1,3 +1,4 @@
+@using UniversityRegistrar.Models
 @{
   Layout = "_Layout";
 }
@@ -12,4 +13,12 @@
         <button id="studentButton"class="btn btn-primary btn-lg" type="submit">Add a Student</button>
     </form>
     <a href="/">Home Page</a><br>
+</div>
+<div>
+    <ul>
+    @foreach (StudentClass student in @Model)
+    {
+        <li>@student.GetName() | @student.GetDate()</li>
+    }
+    </ul>
 </div>

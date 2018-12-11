@@ -1,3 +1,5 @@
+@using UniversityRegistrar.Models;
+
 @{
   Layout = "_Layout";
 }
@@ -12,4 +14,12 @@
         <button id="courseButton"class="btn btn-primary btn-lg" type="submit">Add a Course</button>
     </form>
     <a href="/">Home Page</a><br>
+</div>
+<div>
+    <ul>
+    @foreach (CourseClass course in @Model)
+    {
+        <li>@course.GetName() | @course.GetCode()</li>
+    }
+    </ul>
 </div>
