@@ -1,0 +1,38 @@
+@using UniversityRegistrar.Models
+@{
+  Layout = "_Layout";
+}
+
+<div class="container">
+<h3>Assign a Student to a Course</h3>
+    <form action="/university/assign" method="post">
+        <select name="student">
+            @if (@Model.Count != 0)
+            {
+                @foreach(StudentClass student in @Model["students"])
+                {
+                    <option name="student" value=@student.GetId()>@student.GetName()</option>
+                }
+            }
+            else
+            {
+                <option>No Students in Database</option>
+            }
+        </select><br>
+        <select name="course">
+            @if (@Model.Count != 0)
+            {
+                @foreach(CourseClass course in @Model["courses"])
+                {
+                    <option name="course" value=@course.GetId()>@course.GetName()</option>
+                }
+            }
+            else
+            {
+                <option>No Courses in Database</option>
+            }
+        </select><br>
+        <button id="assignButton"class="btn btn-primary btn-lg" type="submit">Assign</button>
+    </form>
+    <a href="/">Home Page</a><br>
+</div>
