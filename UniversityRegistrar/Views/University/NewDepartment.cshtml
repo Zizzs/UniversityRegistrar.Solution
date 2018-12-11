@@ -1,0 +1,25 @@
+@using UniversityRegistrar.Models;
+
+@{
+  Layout = "_Layout";
+}
+
+<div class="container">
+<h3>Add a department to the Database</h3>
+    <form action="/university/newdepartment" method="post">
+        <label for="name">department Name:</label>
+        <input id="name" name="name" type="text" required><br><br>
+        <button id="departmentButton"class="btn btn-primary btn-lg" type="submit">Add a department</button>
+    </form>
+</div>
+<div>
+    <ul>
+    @foreach (DepartmentClass department in @Model)
+    {
+        <li><a href="/university/department/@department.GetId()">@department.GetName()</a></li>
+
+    }
+    </ul><br><br>
+    <a href="/">Home Page</a>
+
+</div>

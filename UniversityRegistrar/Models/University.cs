@@ -5,11 +5,243 @@ using UniversityRegistrar;
 
 namespace UniversityRegistrar.Models
 {
+    public class DepartmentClass
+    {
+        private int _id;
+        private string _name;
+
+        public DepartmentClass(string name,int id=0)
+        {
+            _id = id;
+            _name = name;
+        }
+        public int GetId()
+        {
+            return _id;
+        }
+
+        public string GetName()
+        {
+            return _name;
+        }
+
+        public void Save()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"INSERT INTO departments (name) VALUES (@name);";
+            cmd.Parameters.AddWithValue("@name", this._name);
+
+            cmd.ExecuteNonQuery();
+            _id = (int) cmd.LastInsertedId;
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public static List<DepartmentClass> GetAll()
+        {
+            List<DepartmentClass> allDepartments = new List<DepartmentClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT * FROM departments;";
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int id = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                DepartmentClass newDepartment = new DepartmentClass(name, id);
+                allDepartments.Add(newDepartment);
+            }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return allDepartments;
+        }
+
+        public static List<DepartmentClass> FindById(int id)
+        {
+            List<DepartmentClass> currentDepartment = new List<DepartmentClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT * FROM departments WHERE id = " + id + ";";
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int idz = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                DepartmentClass newDepartment = new DepartmentClass(name, idz);
+                currentDepartment.Add(newDepartment);
+                
+            }
+            conn.Close();
+            if (conn !=null)
+            {
+                conn.Dispose();
+            }
+            return currentDepartment;
+        }
+    }
+    public class JoinStudentDepartmentClass{
+        private int _id;
+        private int _student_id;
+        private int _department_id;
+
+        public JoinStudentDepartmentClass(int student_id, int department_id, int id=0)
+        {
+            _student_id = student_id;
+            _department_id = department_id;
+            _id = id;
+        }
+        public int GetId()
+        {
+            return _id;
+        }
+
+        public int GetStudentId()
+        {
+            return _student_id;
+        }
+
+        public int GetDepartmentId()
+        {
+            return _department_id;
+        }
+        public void Save()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"INSERT INTO department_students(student_id, department_id) VALUES (@student, @department);";
+            cmd.Parameters.AddWithValue("@student", this._student_id);
+            cmd.Parameters.AddWithValue("@department", this._department_id);
+
+            cmd.ExecuteNonQuery();
+            _id = (int) cmd.LastInsertedId;
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+        
+        public static List<StudentClass> GetStudentsByDepartmentId(int departmentId)
+        {
+            
+            List<StudentClass> allStudents = new List<StudentClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT students.* FROM
+                students JOIN department_students ON (students.id = department_students.student_id)
+                    JOIN departments ON (department_students.department_id = departments.id)
+                WHERE departments.id = " + departmentId + ";";
+
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int id = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                DateTime date = (DateTime) rdr.GetDateTime(2);
+                StudentClass newStudent = new StudentClass(name, date.ToString("MM/dd/yyyy"), id);
+                allStudents.Add(newStudent);
+            }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return allStudents;
+        }
+
+    }
+    public class JoinCourseDepartmentClass
+    {
+        private int _id;
+        private int _course_id;
+        private int _department_id;
+
+        public JoinCourseDepartmentClass(int course_id, int department_id, int id=0)
+        {
+            _course_id = course_id;
+            _department_id = department_id;
+            _id = id;
+        }
+        public int GetId()
+        {
+            return _id;
+        }
+
+        public int GetCourseId()
+        {
+            return _course_id;
+        }
+
+        public int GetDepartmentId()
+        {
+            return _department_id;
+        }
+        public void Save()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"INSERT INTO department_courses(course_id, department_id) VALUES (@course, @department);";
+            cmd.Parameters.AddWithValue("@course", this._course_id);
+            cmd.Parameters.AddWithValue("@department", this._department_id);
+
+            cmd.ExecuteNonQuery();
+            _id = (int) cmd.LastInsertedId;
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public static List<CourseClass> GetCoursesByDepartmentId(int departmentId)
+        {
+            
+            List<CourseClass> allCourses = new List<CourseClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT courses.* FROM
+                courses JOIN department_courses ON (courses.id = department_courses.Course_id)
+                    JOIN departments ON (department_courses.department_id = departments.id)
+                WHERE departments.id = " + departmentId + ";";
+
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int id = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                string code = rdr.GetString(2);
+                CourseClass newCourse = new CourseClass(name, code, id);
+                allCourses.Add(newCourse);
+            }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return allCourses;
+        }
+
+    }
     public class JoinTableClass
     {
         private int _id;
         private int _student_id;
         private int _course_id;
+        private int _department_id;
 
         public JoinTableClass(int student_id, int course_id, int id=0)
         {
@@ -50,64 +282,62 @@ namespace UniversityRegistrar.Models
                 conn.Dispose();
             }
         }
+
         public static List<CourseClass> GetCoursesByStudentId(int studentId)
         {
-            {
-                List<CourseClass> allCourses = new List<CourseClass>{};
-                MySqlConnection conn = DB.Connection();
-                conn.Open();
-                var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"SELECT courses.* FROM
-                    courses JOIN students_courses ON (courses.id = students_courses.course_id)
-                        JOIN students ON (students_courses.student_id = students.id)
-                    WHERE students.id = " + studentId + ";";
+            
+            List<CourseClass> allCourses = new List<CourseClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT courses.* FROM
+                courses JOIN students_courses ON (courses.id = students_courses.course_id)
+                    JOIN students ON (students_courses.student_id = students.id)
+                WHERE students.id = " + studentId + ";";
 
-                MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-                while(rdr.Read())
-                {
-                    int id = rdr.GetInt32(0);
-                    string name = rdr.GetString(1);
-                    string code = rdr.GetString(2);
-                    CourseClass newCourse = new CourseClass(name, code, id);
-                    allCourses.Add(newCourse);
-                }
-                conn.Close();
-                if (conn != null)
-                {
-                    conn.Dispose();
-                }
-                return allCourses;
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int id = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                string code = rdr.GetString(2);
+                CourseClass newCourse = new CourseClass(name, code, id);
+                allCourses.Add(newCourse);
             }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return allCourses;
         }
 
         public static List<StudentClass> GetStudentsByCourseId(int courseId)
         {
-            {
-                List<StudentClass> allStudents = new List<StudentClass>{};
-                MySqlConnection conn = DB.Connection();
-                conn.Open();
-                var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"SELECT students.* FROM
-                    students JOIN students_courses ON (students.id = students_courses.student_id)
-                        JOIN courses ON (students_courses.course_id = courses.id)
-                    WHERE courses.id = " + courseId + ";";
+            List<StudentClass> allStudents = new List<StudentClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT students.* FROM
+                students JOIN students_courses ON (students.id = students_courses.student_id)
+                    JOIN courses ON (students_courses.course_id = courses.id)
+                WHERE courses.id = " + courseId + ";";
 
-                MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-                while(rdr.Read())
-                {
-                    int id = rdr.GetInt32(0);
-                    string name = rdr.GetString(1);
-                    DateTime date = (DateTime) rdr.GetDateTime(2);
-                    StudentClass newStudent = new StudentClass(name, date.ToString("MM/dd/yyyy"), id);
-                    allStudents.Add(newStudent);
-                }
-                conn.Close();
-                if (conn != null)
-                {
-                    conn.Dispose();
-                }
-                return allStudents;
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int id = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                DateTime date = (DateTime) rdr.GetDateTime(2);
+                StudentClass newStudent = new StudentClass(name, date.ToString("MM/dd/yyyy"), id);
+                allStudents.Add(newStudent);
             }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return allStudents;
         }
     }
     public class StudentClass
