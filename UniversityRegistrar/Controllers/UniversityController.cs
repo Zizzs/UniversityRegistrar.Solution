@@ -55,5 +55,27 @@ namespace UniversityRegistrar.Controllers
             join.Save();
             return RedirectToAction("Assign");
         }
+
+        [HttpGet("/university/student/{id}")]
+        public ActionResult ShowStudent(int id)
+        {
+            Dictionary<string, object> allInfo = new Dictionary<string, object>();
+            List<StudentClass> student = StudentClass.FindById(id);
+            List<CourseClass> courses = JoinTableClass.GetCoursesByStudentId(id);
+            allInfo.Add("student", student);
+            allInfo.Add("courses", courses);
+            return View("ShowStudent", allInfo);
+        }
+
+        [HttpGet("/university/course/{id}")]
+        public ActionResult ShowCourse(int id)
+        {
+            Dictionary<string, object> allInfo = new Dictionary<string, object>();
+            List<StudentClass> students = JoinTableClass.GetStudentsByCourseId(id);
+            List<CourseClass> course = CourseClass.FindById(id);
+            allInfo.Add("students", students);
+            allInfo.Add("course", course);
+            return View("ShowCourse", allInfo);
+        }
     }
 }

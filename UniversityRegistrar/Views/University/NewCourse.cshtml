@@ -8,18 +8,20 @@
 <h3>Add a Course to the Database</h3>
     <form action="/university/newcourse" method="post">
         <label for="name">Course Name:</label>
-        <input id="name" name="name" type="text" required><br>
+        <input id="name" name="name" type="text" required><br><br>
         <label for="code">Course Code:</label>
-        <input id="code" name="code" type="text" required><br>
+        <input id="code" name="code" type="text" required><br><br>
         <button id="courseButton"class="btn btn-primary btn-lg" type="submit">Add a Course</button>
     </form>
-    <a href="/">Home Page</a><br>
 </div>
 <div>
     <ul>
     @foreach (CourseClass course in @Model)
     {
-        <li>@course.GetName() | @course.GetCode()</li>
+        <li><a href="/university/course/@course.GetId()">@course.GetName() | @course.GetCode()</a></li>
+
     }
-    </ul>
+    </ul><br><br>
+    <a href="/">Home Page</a>
+
 </div>

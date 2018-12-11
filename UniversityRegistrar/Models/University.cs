@@ -50,6 +50,65 @@ namespace UniversityRegistrar.Models
                 conn.Dispose();
             }
         }
+        public static List<CourseClass> GetCoursesByStudentId(int studentId)
+        {
+            {
+                List<CourseClass> allCourses = new List<CourseClass>{};
+                MySqlConnection conn = DB.Connection();
+                conn.Open();
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"SELECT courses.* FROM
+                    courses JOIN students_courses ON (courses.id = students_courses.course_id)
+                        JOIN students ON (students_courses.student_id = students.id)
+                    WHERE students.id = " + studentId + ";";
+
+                MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+                while(rdr.Read())
+                {
+                    int id = rdr.GetInt32(0);
+                    string name = rdr.GetString(1);
+                    string code = rdr.GetString(2);
+                    CourseClass newCourse = new CourseClass(name, code, id);
+                    allCourses.Add(newCourse);
+                }
+                conn.Close();
+                if (conn != null)
+                {
+                    conn.Dispose();
+                }
+                return allCourses;
+            }
+        }
+
+        public static List<StudentClass> GetStudentsByCourseId(int courseId)
+        {
+            {
+                List<StudentClass> allStudents = new List<StudentClass>{};
+                MySqlConnection conn = DB.Connection();
+                conn.Open();
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"SELECT students.* FROM
+                    students JOIN students_courses ON (students.id = students_courses.student_id)
+                        JOIN courses ON (students_courses.course_id = courses.id)
+                    WHERE courses.id = " + courseId + ";";
+
+                MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+                while(rdr.Read())
+                {
+                    int id = rdr.GetInt32(0);
+                    string name = rdr.GetString(1);
+                    DateTime date = (DateTime) rdr.GetDateTime(2);
+                    StudentClass newStudent = new StudentClass(name, date.ToString("MM/dd/yyyy"), id);
+                    allStudents.Add(newStudent);
+                }
+                conn.Close();
+                if (conn != null)
+                {
+                    conn.Dispose();
+                }
+                return allStudents;
+            }
+        }
     }
     public class StudentClass
     {
@@ -120,6 +179,31 @@ namespace UniversityRegistrar.Models
             }
             return allStudents;
         }
+
+        public static List<StudentClass> FindById(int id)
+        {
+            List<StudentClass> currentStudent = new List<StudentClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT * FROM students WHERE id = " + id + ";";
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int idz = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                DateTime date = (DateTime) rdr.GetDateTime(2);
+                StudentClass newStudent = new StudentClass(name, date.ToString("MM/dd/yyyy"), idz);
+                currentStudent.Add(newStudent);
+                
+            }
+            conn.Close();
+            if (conn !=null)
+            {
+                conn.Dispose();
+            }
+            return currentStudent;
+        }
     }
 
     public class CourseClass
@@ -166,6 +250,31 @@ namespace UniversityRegistrar.Models
             {
                 conn.Dispose();
             }
+        }
+
+        public static List<CourseClass> FindById(int id)
+        {
+            List<CourseClass> currentCourse = new List<CourseClass>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT * FROM courses WHERE id = " + id + ";";
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int idz = rdr.GetInt32(0);
+                string name = rdr.GetString(1);
+                string code = rdr.GetString(2);
+                CourseClass newCourse = new CourseClass(name, code, idz);
+                currentCourse.Add(newCourse);
+                
+            }
+            conn.Close();
+            if (conn !=null)
+            {
+                conn.Dispose();
+            }
+            return currentCourse;
         }
 
         public static List<CourseClass> GetAll()

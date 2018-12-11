@@ -1,0 +1,20 @@
+@using UniversityRegistrar.Models
+@{
+  Layout = "_Layout";
+}
+
+<div class="container">
+    <h3>@Model["course"][0].GetName() | @Model["course"][0].GetCode()</h3>  
+</div>
+<br>
+<div>
+    <p>List of students that are in @Model["course"][0].GetName().</p>
+    <ul>
+    @foreach (StudentClass student in @Model["students"])
+    {
+        <li>@student.GetName() | @student.GetDate()</li>
+    }
+    </ul><br>
+    <a href="/university/newcourse">Back</a><br>
+    <a href="/">Home Page</a><br>
+</div>
