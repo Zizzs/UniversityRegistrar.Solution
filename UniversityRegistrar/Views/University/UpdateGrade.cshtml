@@ -1,0 +1,34 @@
+@using UniversityRegistrar.Models
+@{
+    var i = 0;
+}
+@{
+  Layout = "_Layout";
+}
+
+<div class="container">
+    <h3>@Model["student"][0].GetName() | @Model["student"][0].GetDate()</h3>  
+</div>
+<br>
+<div>
+    <p>List of courses that @Model["student"][0].GetName() is currently taking.</p>
+    <form action='/university/updategrade/@Model["student"][0].GetId()' method="post">
+    <select name="course">
+    @foreach (CourseClass course in @Model["courses"])
+    {
+        <option name="course" value=@course.GetId()>@course.GetName() | @course.GetCode()</option>
+    }
+    </select><br>
+    <label for="status">Pass or Fail Student</label>
+    <select name="status">
+        <option name="status" value="0">Failing/In Course</option>
+        <option name="status" value="1">Passing</option>
+    </select><br>
+    <button id="courseButton"class="btn btn-primary btn-lg" type="submit">Add a Course</button>
+    </form>
+    <br>
+    <a href="/university/newstudent">Back</a><br>
+    <a href='/university/updategrade/@Model["student"][0].GetId()'>Change Grades</a><br>
+    <a href="/">Home Page</a><br>
+</div>
+

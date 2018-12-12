@@ -242,11 +242,20 @@ namespace UniversityRegistrar.Models
         private int _student_id;
         private int _course_id;
         private int _department_id;
+        private int _status;
 
         public JoinTableClass(int student_id, int course_id, int id=0)
         {
             _student_id = student_id;
             _course_id = course_id;
+            _id = id;
+        }
+
+        public JoinTableClass(int student_id, int course_id, int status, int id=0)
+        {
+            _student_id = student_id;
+            _course_id = course_id;
+            _status = status;
             _id = id;
         }
 
@@ -263,6 +272,11 @@ namespace UniversityRegistrar.Models
         public int GetCourseId()
         {
             return _course_id;
+        }
+
+        public int GetStatus()
+        {
+            return _status;
         }
 
         public void Save()
@@ -338,6 +352,61 @@ namespace UniversityRegistrar.Models
                 conn.Dispose();
             }
             return allStudents;
+        }
+
+        public static bool FindStatusByStudentAndCourseId(int student_id, int course_id)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT status FROM students_courses WHERE student_id = " + student_id + " AND course_id = " + course_id + ";";
+            MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+            bool status = false;
+            while(rdr.Read())
+            {
+                if (rdr.GetBoolean(0) == false)
+                {
+                    status = false;
+                }
+                else
+                {
+                    status = true;
+                }
+            }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return status;
+        }
+
+        public static void UpdatePassing(int student_id, int course_id)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"UPDATE students_courses SET status = true WHERE student_id = " + student_id + " AND course_id = " + course_id + ";";
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public static void UpdateFailing(int student_id, int course_id)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"UPDATE students_courses SET status = false WHERE student_id = " + student_id + " AND course_id = " + course_id + ";";
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
         }
     }
     public class StudentClass

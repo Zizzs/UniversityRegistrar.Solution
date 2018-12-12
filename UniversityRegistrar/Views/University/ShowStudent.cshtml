@@ -1,5 +1,8 @@
 @using UniversityRegistrar.Models
 @{
+    var i = 0;
+}
+@{
   Layout = "_Layout";
 }
 
@@ -12,9 +15,14 @@
     <ul>
     @foreach (CourseClass course in @Model["courses"])
     {
-        <li>@course.GetName() | @course.GetCode()</li>
+        <li>@course.GetName() | @course.GetCode() 
+        
+        @if ( Model["status"][i] == false ) {<p>In Course/Failing</p>} else {<p>Passing</p>}
+        @{i++;}
+                                                            </li>
     }
     </ul><br>
     <a href="/university/newstudent">Back</a><br>
+    <a href='/university/updategrade/@Model["student"][0].GetId()'>Change Grades</a><br>
     <a href="/">Home Page</a><br>
 </div>

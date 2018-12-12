@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using UniversityRegistrar.Models;
+using System;
 
 namespace UniversityRegistrar.Controllers
 {
@@ -116,8 +117,15 @@ namespace UniversityRegistrar.Controllers
             Dictionary<string, object> allInfo = new Dictionary<string, object>();
             List<StudentClass> student = StudentClass.FindById(id);
             List<CourseClass> courses = JoinTableClass.GetCoursesByStudentId(id);
+            List<bool> classStatus = new List<bool>() {};
+            foreach (CourseClass course in courses)
+            {
+                bool status = JoinTableClass.FindStatusByStudentAndCourseId(id, course.GetId());
+                classStatus.Add(status);
+            }
             allInfo.Add("student", student);
             allInfo.Add("courses", courses);
+            allInfo.Add("status", classStatus);
             return View("ShowStudent", allInfo);
         }
 
@@ -143,6 +151,38 @@ namespace UniversityRegistrar.Controllers
             allInfo.Add("courses", courses);
             allInfo.Add("department", department);
             return View("ShowDepartment", allInfo);
+        }
+
+        [HttpGet("/university/updategrade/{id}")]
+        public ActionResult UpdateGrade(int id)
+        {
+            Dictionary<string, object> allInfo = new Dictionary<string, object>();
+            List<StudentClass> student = StudentClass.FindById(id);
+            List<CourseClass> courses = JoinTableClass.GetCoursesByStudentId(id);
+            List<bool> classStatus = new List<bool>() {};
+            foreach (CourseClass course in courses)
+            {
+                bool status = JoinTableClass.FindStatusByStudentAndCourseId(id, course.GetId());
+                classStatus.Add(status);
+            }
+            allInfo.Add("student", student);
+            allInfo.Add("courses", courses);
+            allInfo.Add("status", classStatus);
+            return View(allInfo);
+        }
+
+        [HttpPost("/university/updategrade/{id}")]
+        public ActionResult Update(int id, int course, string status)
+        {
+            if (status == "1")
+            {
+                JoinTableClass.UpdatePassing(id, course);
+            }
+            else
+            {
+                JoinTableClass.UpdateFailing(id, course);
+            }
+            return RedirectToAction("ShowStudent", id);
         }
     }
 }
